@@ -1,0 +1,12 @@
+---
+# handlers/main.yml (postfix)
+# Prefix : postfix
+
+- name: Restart postfix
+  systemd:
+    name: postfix.service
+    state: restarted
+    enabled: yes
+
+- name: Update alias
+  command: newaliases
