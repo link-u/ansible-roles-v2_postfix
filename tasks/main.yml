@@ -1,0 +1,13 @@
+---
+# tasks/main.yml (postfix)
+# Prefix : postfix
+
+- name: Install tasks
+  import_tasks: install.yml
+  when:
+    - postfix_install_flag | bool
+  tags: ["install"]
+
+- name: Configure tasks
+  import_tasks: configure.yml
+  tags: ["configure"]

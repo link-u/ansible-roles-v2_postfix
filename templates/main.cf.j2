@@ -1,0 +1,77 @@
+# See /usr/share/postfix/main.cf.dist for a commented, more complete version
+
+
+# Debian specific:  Specifying a file name will cause the first
+# line of that file to be used as the name.  The Debian default
+# is /etc/mailname.
+myorigin = {{ postfix_domain }}
+myhostname = {{ postfix_hostname }}
+{% if postfix_network is iterable and postfix_network is not string %}
+mynetworks = {{ postfix_network | join(" ") }}
+{% else %}
+mynetworks = {{ postfix_network }}
+{% endif %}
+mydestination = {{ postfix_destination if postfix_enable_reception else ""}}
+
+inet_interfaces = {{ "all" if postfix_enable_reception else "loopback-only" }}
+inet_protocols = all
+
+disable_vrfy_command = yes
+smtpd_helo_required = yes
+smtpd_banner = $myorigin ESMTP
+
+biff = no
+# appending .domain is the MUA's job.
+append_dot_mydomain = no
+# Uncomment the next line to generate "delayed mail" warnings
+#delay_warning_time = 4h
+readme_directory = no
+
+# TLS parameters
+smtpd_tls_cert_file=/etc/ssl/certs/ssl-cert-snakeoil.pem
+smtpd_tls_key_file=/etc/ssl/private/ssl-cert-snakeoil.key
+smtpd_use_tls=yes
+smtpd_tls_session_cache_database = btree:${data_directory}/smtpd_scache
+smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
+smtp_tls_security_level = may
+
+# See /usr/share/doc/postfix/TLS_README.gz in the postfix-doc package for
+# information on enabling SSL in the smtp client.
+
+alias_maps = hash:/etc/aliases 
+alias_database = hash:/etc/aliases
+relayhost =
+mailbox_size_limit = {{ postfix_mailbox_size_limit }}
+recipient_delimiter = +
+
+{% if __postfix_combined_virtual_alias.domains | length > 0 %}
+virtual_alias_domains = {{ __postfix_combined_virtual_alias.domains | join(',') }}
+virtual_alias_maps = hash:{{ __postfix_combined_virtual_alias.map_path }}
+{% endif %}
+
+smtpd_client_restrictions = permit_mynetworks, 
+                            reject_unauth_pipelining,
+                            reject_unknown_client,
+                            permit
+
+smtpd_etrn_restrictions = permit_mynetworks,
+                          reject_unauth_pipelining,
+                          reject_invalid_hostname,
+                          permit
+
+smtpd_helo_restrictions = permit_mynetworks,
+                          reject_unauth_pipelining,
+                          reject_invalid_hostname,
+                          reject_unknown_client,
+                          permit
+
+smtpd_relay_restrictions = permit_mynetworks, 
+                           reject_unauth_pipelining,
+                           permit_auth_destination,
+                           reject
+
+smtpd_sender_restrictions = permit_mynetworks,
+                            reject_unknown_sender_domain,
+                            reject_unauth_pipelining,
+                            reject_non_fqdn_sender,
+                            permit

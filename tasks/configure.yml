@@ -1,0 +1,45 @@
+---
+# tasks/configure.yml (postfix)
+# Prefix : postfix
+
+- name: Set main.cf
+  template:
+    src: main.cf.j2
+    dest: "/etc/postfix/main.cf"
+    mode: 0644
+  notify: Restart postfix
+
+- name: Set extra main.cf
+  lineinfile:
+    dest: "/etc/postfix/main.cf"
+    line: '{{ item.key }}= {{ item.value }}'
+    regexp: '^{{ item.key }}'
+  loop: "{{ postfix_extra_main_confs | dict2items }}"
+  notify: Restart postfix
+
+- name: Set virtual_alias_maps
+  template:
+    src: virtual_alias_maps.j2
+    dest: "{{ __postfix_combined_virtual_alias.map_path }}"
+    mode: 0644
+  when: __postfix_combined_virtual_alias.domains | length > 0
+  register: virtual_alias_maps_set
+
+- name: create virtual_alias_maps hash
+  command: "postmap {{ __postfix_combined_virtual_alias.map_path }}"
+  when: virtual_alias_maps_set.changed
+  notify: Restart postfix
+
+- name: Start posftfix
+  systemd:
+    name: postfix.service
+    state: started
+
+- name: Set /etc/aliases
+  lineinfile:
+    dest: /etc/aliases
+    state: present
+    line: '{{ item.key }}: {{ item.value }}'
+    regexp: '^{{ item.key }}'
+  loop: "{{ postfix_aliases | dict2items }}"
+  notify: Update alias
