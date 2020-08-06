@@ -69,3 +69,11 @@ postfix_aliases: {}
   roles:
     - { role: postfix, tags: ["postfix"] }
 ```
+
+## License
+
+Unless otherwise stated this repository licensed under MIT license. Please read [LICENSE](LICENSE) for the details.
+
+### templates/main.cf.j2
+
+The original version of [templates/main.cf.j2](templates/main.cf.j2) is obtained from http://www.postfix.org/ and is licensed under the Eclipse Public License. Please read [LICENSE.postfix](LICENSE.postfix) for the details.
