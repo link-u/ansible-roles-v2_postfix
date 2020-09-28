@@ -6,7 +6,7 @@
   template:
     src: main.cf.j2
     dest: "/etc/postfix/main.cf"
-    mode: 0644
+    mode: "0644"
   notify: Restart postfix
 
 - name: Set extra main.cf
@@ -21,7 +21,7 @@
   template:
     src: virtual_alias_maps.j2
     dest: "{{ __postfix_combined_virtual_alias.map_path }}"
-    mode: 0644
+    mode: "0644"
   when: __postfix_combined_virtual_alias.domains | length > 0
   register: virtual_alias_maps_set
 
