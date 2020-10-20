@@ -1,5 +1,7 @@
 # postfix
 
+![ansible ci](https://github.com/link-u/ansible-roles-v2_postfix/workflows/ansible%20ci/badge.svg)
+
 ## 概要
 
 postfix設定role。postfixなので送信のみ。
