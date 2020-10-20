@@ -8,9 +8,10 @@ postfix設定role。postfixなので送信のみ。
 
 ## 動作確認バージョン
 
-- Ubuntu 18.04 (bionic)
-- ansible >= 2.8
-- Jinja2 2.10.3
+* Ubuntu: 18.04, 20.04
+* ansible: 2.8, 2.9
+
+<br>
 
 ### Role variables
 
